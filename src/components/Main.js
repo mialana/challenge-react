@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from "react";
 import data from "../data.json";
 
-const numOptions = Object.values(data.questions[0].options).length;
+let maxOptions = 0;
+data.questions.forEach((question) => {
+  if (Object.values(question.options).length > maxOptions) {
+    maxOptions = Object.values(question.options).length;
+  }
+});
 
 export default () => {
   const [answers, setAnswers] = useState(
-    Array(
-      numOptions * data.questions.length
-    ).fill(false)
+    Array(maxOptions * data.questions.length).fill(false)
   );
   const [selected, setSelected] = useState(
-    Array(
-      numOptions * data.questions.length
-    ).fill("notSelected")
+    Array(maxOptions * data.questions.length).fill("notSelected")
   );
   const [submitted, setSubmitted] = useState(false);
   const [max, setMax] = useState(-1);
   const [visible, setVisible] = useState("notVisible");
-
-  
 
   useEffect(() => {
     if (max !== -1) {
@@ -28,24 +27,68 @@ export default () => {
 
   function printQuestions() {
     return data.questions.map((question, i) => (
-      <div key={i}>
-        <div className="prompt">{question.prompt}</div>
+      <div key={i} className="question">
+        <div className="prompt">
+          <strong>
+            {i + 1}. {question.prompt}
+          </strong>
+        </div>
         {Object.values(question.options).map((option, j) => (
-          <div key={numOptions * i + j}>
+          <div
+            key={maxOptions * i + j}
+            id="options"
+            className={selected[maxOptions * i + j]}
+            onClick={() => {
+              if (submitted === false) {
+                const answersArray = [...answers];
+                answersArray.forEach((_, index) => {
+                  if (index >= maxOptions * i && index < maxOptions * (i + 1)) {
+                    if (index === maxOptions * i + j) {
+                      answersArray[maxOptions * i + j] =
+                        !answersArray[maxOptions * i + j];
+                    } else if (index !== maxOptions * i + j) {
+                      answersArray[index] = false;
+                    }
+                  }
+                });
+                setAnswers(answersArray);
+
+                const selectedArray = [...selected];
+                selectedArray.forEach((_, index) => {
+                  if (index >= maxOptions * i && index < maxOptions * (i + 1)) {
+                    if (index === maxOptions * i + j) {
+                      if (selectedArray[maxOptions * i + j] === "notSelected") {
+                        selectedArray[maxOptions * i + j] = "selected";
+                      } else if (
+                        selectedArray[maxOptions * i + j] === "selected"
+                      ) {
+                        selectedArray[maxOptions * i + j] = "notSelected";
+                      }
+                    } else {
+                      selectedArray[index] = "notSelected";
+                    }
+                  }
+                });
+                setSelected(selectedArray);
+              }
+            }}
+          >
             <input
               type="checkbox"
+              className="checkbox"
+              checked={answers[maxOptions * i + j]}
               onChange={() => {
                 if (submitted === false) {
                   const answersArray = [...answers];
                   answersArray.forEach((_, index) => {
                     if (
-                      index >= numOptions * i &&
-                      index <= numOptions * (i + 1)
+                      index >= maxOptions * i &&
+                      index < maxOptions * (i + 1)
                     ) {
-                      if (index === numOptions * i + j) {
-                        answersArray[numOptions * i + j] =
-                          !answersArray[numOptions * i + j];
-                      } else if (index !== numOptions * i + j) {
+                      if (index === maxOptions * i + j) {
+                        answersArray[maxOptions * i + j] =
+                          !answersArray[maxOptions * i + j];
+                      } else if (index !== maxOptions * i + j) {
                         answersArray[index] = false;
                       }
                     }
@@ -53,84 +96,31 @@ export default () => {
                   setAnswers(answersArray);
 
                   const selectedArray = [...selected];
-                  if (selectedArray) {
-                    selectedArray.forEach((_, index) => {
-                      if (
-                        index >= numOptions * i &&
-                        index <= numOptions * (i + 1)
-                      ) {
-                        if (index === numOptions * i + j) {
-                          if (
-                            selectedArray[numOptions * i + j] === "notSelected"
-                          ) {
-                            selectedArray[numOptions * i + j] = "selected";
-                          } else if (
-                            selectedArray[numOptions * i + j] === "selected"
-                          ) {
-                            selectedArray[numOptions * i + j] = "notSelected";
-                          }
-                        } else {
-                          selectedArray[index] = "notSelected";
-                        }
-                      }
-                    });
-                  }
-
-                  setSelected(selectedArray);
-                }
-              }}
-              checked={answers[numOptions * i + j]}
-            ></input>
-            <div
-              className={selected[numOptions * i + j]}
-              onClick={() => {
-                if (submitted === false) {
-                  const answersArray = [...answers];
-                  answersArray.forEach((_, index) => {
+                  selectedArray.forEach((_, index) => {
                     if (
-                      index >= numOptions * i &&
-                      index <= numOptions * (i + 1)
+                      index >= maxOptions * i &&
+                      index < maxOptions * (i + 1)
                     ) {
-                      if (index === numOptions * i + j) {
-                        answersArray[numOptions * i + j] =
-                          !answersArray[numOptions * i + j];
-                      } else if (index !== numOptions * i + j) {
-                        answersArray[index] = false;
+                      if (index === maxOptions * i + j) {
+                        if (
+                          selectedArray[maxOptions * i + j] === "notSelected"
+                        ) {
+                          selectedArray[maxOptions * i + j] = "selected";
+                        } else if (
+                          selectedArray[maxOptions * i + j] === "selected"
+                        ) {
+                          selectedArray[maxOptions * i + j] = "notSelected";
+                        }
+                      } else {
+                        selectedArray[index] = "notSelected";
                       }
                     }
                   });
-                  setAnswers(answersArray);
-
-                  const selectedArray = [...selected];
-                  if (selectedArray) {
-                    selectedArray.forEach((_, index) => {
-                      if (
-                        index >= numOptions * i &&
-                        index <= numOptions * (i + 1)
-                      ) {
-                        if (index === numOptions * i + j) {
-                          if (
-                            selectedArray[numOptions * i + j] === "notSelected"
-                          ) {
-                            selectedArray[numOptions * i + j] = "selected";
-                          } else if (
-                            selectedArray[numOptions * i + j] === "selected"
-                          ) {
-                            selectedArray[numOptions * i + j] = "notSelected";
-                          }
-                        } else {
-                          selectedArray[index] = "notSelected";
-                        }
-                      }
-                    });
-                  }
-
                   setSelected(selectedArray);
                 }
               }}
-            >
-              {option}
-            </div>
+            ></input>
+            <div>{option}</div>
           </div>
         ))}
       </div>
@@ -139,33 +129,36 @@ export default () => {
 
   function showResults(event) {
     event.preventDefault();
-    setSubmitted(true);
-    console.log(answers);
-
-    let amountsArray = Array(numOptions).fill(0);
-    answers.forEach((answer, index) => {
+    let count = 0;
+    answers.forEach((answer) => {
       if (answer) {
-        amountsArray[index % numOptions]++;
+        count++;
       }
     });
-    console.log(amountsArray);
-    let indexOfMax = amountsArray.findIndex(
-      (amount) => amount === Math.max(...amountsArray)
-    );
-    console.log(Math.max(...amountsArray));
-    console.log(indexOfMax);
-    setMax(indexOfMax);
+
+    if (count === data.questions.length) {
+      setSubmitted(true);
+
+      let amountsArray = Array(maxOptions).fill(0);
+      answers.forEach((answer, index) => {
+        if (answer) {
+          amountsArray[index % maxOptions]++;
+        }
+      });
+      let indexOfMax = amountsArray.findIndex(
+        (amount) => amount === Math.max(...amountsArray)
+      );
+      setMax(indexOfMax);
+    }
   }
 
   function resetQuiz() {
-    let resetAnswers = Array(
-      numOptions * data.questions.length
-    ).fill(false)
+    let resetAnswers = Array(maxOptions * data.questions.length).fill(false);
     setAnswers(resetAnswers);
 
-    let resetSelected = Array(
-      numOptions * data.questions.length
-    ).fill("notSelected")
+    let resetSelected = Array(maxOptions * data.questions.length).fill(
+      "notSelected"
+    );
     setSelected(resetSelected);
 
     setSubmitted(false);
@@ -174,13 +167,23 @@ export default () => {
   }
 
   return (
-    <div>
+    <div className="entirePage">
       <form onSubmit={showResults}>
         {printQuestions()}
-        <button type="submit">Show Me My Results!</button>
+        <button type="submit" className={visible} id="submit">
+          Show me my results!
+        </button>
       </form>
-      <div className={visible}>{data.results[max]}</div>
-      <button className={visible} onClick={resetQuiz}>Retake Quiz</button>
+      <button className={visible} onClick={resetQuiz} id="reset">
+        Retake Quiz
+      </button>
+      <div className={visible} id="results">
+        <br></br>
+        <div className="congrats">
+          <strong>Congratulations!</strong>
+        </div>
+        {data.results[max]}
+      </div>
     </div>
   );
 };
