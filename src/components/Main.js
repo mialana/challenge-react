@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
 import data from "../data.json";
 
+const numOptions = Object.values(data.questions[0].options).length;
+
 export default () => {
   const [answers, setAnswers] = useState(
     Array(
-      Object.values(data.questions[0].options).length * data.questions.length
+      numOptions * data.questions.length
     ).fill(false)
   );
   const [selected, setSelected] = useState(
     Array(
-      Object.values(data.questions[0].options).length * data.questions.length
+      numOptions * data.questions.length
     ).fill("notSelected")
-  );
-  const [numOptions, setNumOptions] = useState(
-    Object.values(data.questions[0].options).length
   );
   const [submitted, setSubmitted] = useState(false);
   const [max, setMax] = useState(-1);
   const [visible, setVisible] = useState("notVisible");
+
+  
 
   useEffect(() => {
     if (max !== -1) {
@@ -36,7 +37,7 @@ export default () => {
               onChange={() => {
                 if (submitted === false) {
                   const answersArray = [...answers];
-                  answersArray.map((_, index) => {
+                  answersArray.forEach((_, index) => {
                     if (
                       index >= numOptions * i &&
                       index <= numOptions * (i + 1)
@@ -50,11 +51,10 @@ export default () => {
                     }
                   });
                   setAnswers(answersArray);
-                  console.log(answersArray);
 
                   const selectedArray = [...selected];
                   if (selectedArray) {
-                    selectedArray.map((_, index) => {
+                    selectedArray.forEach((_, index) => {
                       if (
                         index >= numOptions * i &&
                         index <= numOptions * (i + 1)
@@ -77,7 +77,6 @@ export default () => {
                   }
 
                   setSelected(selectedArray);
-                  console.log(selectedArray);
                 }
               }}
               checked={answers[numOptions * i + j]}
@@ -87,7 +86,7 @@ export default () => {
               onClick={() => {
                 if (submitted === false) {
                   const answersArray = [...answers];
-                  answersArray.map((_, index) => {
+                  answersArray.forEach((_, index) => {
                     if (
                       index >= numOptions * i &&
                       index <= numOptions * (i + 1)
@@ -101,11 +100,10 @@ export default () => {
                     }
                   });
                   setAnswers(answersArray);
-                  console.log(answersArray);
 
                   const selectedArray = [...selected];
                   if (selectedArray) {
-                    selectedArray.map((_, index) => {
+                    selectedArray.forEach((_, index) => {
                       if (
                         index >= numOptions * i &&
                         index <= numOptions * (i + 1)
@@ -128,7 +126,6 @@ export default () => {
                   }
 
                   setSelected(selectedArray);
-                  console.log(selectedArray);
                 }
               }}
             >
@@ -142,12 +139,11 @@ export default () => {
 
   function showResults(event) {
     event.preventDefault();
-    console.log("submitted");
     setSubmitted(true);
     console.log(answers);
 
     let amountsArray = Array(numOptions).fill(0);
-    answers.map((answer, index) => {
+    answers.forEach((answer, index) => {
       if (answer) {
         amountsArray[index % numOptions]++;
       }
@@ -159,7 +155,22 @@ export default () => {
     console.log(Math.max(...amountsArray));
     console.log(indexOfMax);
     setMax(indexOfMax);
-    console.log(data.results[indexOfMax]);
+  }
+
+  function resetQuiz() {
+    let resetAnswers = Array(
+      numOptions * data.questions.length
+    ).fill(false)
+    setAnswers(resetAnswers);
+
+    let resetSelected = Array(
+      numOptions * data.questions.length
+    ).fill("notSelected")
+    setSelected(resetSelected);
+
+    setSubmitted(false);
+    setMax(-1);
+    setVisible("notVisible");
   }
 
   return (
@@ -169,6 +180,7 @@ export default () => {
         <button type="submit">Show Me My Results!</button>
       </form>
       <div className={visible}>{data.results[max]}</div>
+      <button className={visible} onClick={resetQuiz}>Retake Quiz</button>
     </div>
   );
 };
