@@ -1,0 +1,9 @@
+.prompt {
+  margin-bottom: 1rem;
+  color: red;
+}
+
+.selected {
+  background-color: grey;
+
+}
