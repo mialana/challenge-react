@@ -1,7 +1,40 @@
 1. How many hours did you spend on this challenge?
 
+Approx. 4-6 hrs split between multiple days.
+
+
 2. Describe the features you have implemented.
+
+While writing my program, I did my best to match both the format and functionality
+of the example quiz that was provided to us.
+
+In terms of format, noticeable features include:
+
+- under the button logo that redirects to the publication's home page
+- selectable options that respond to cursor hovering and clicking
+
+In terms of functionality, following the criteria that's listed in the README, 
+I implemented code that ensures that:
+
+- there is at most 1 option selected at a time
+- after clicking "show me my results," the form is no longer editable
+- "show me my results" is correctly calculated based off of the user's input
+- the "show me my results" button is only clickable after every question's answered
+- the "retake quiz" button pops up after the user submits
+
 
 3. Describe the difficulties you faced (if any) while working on the challenge and how you tackled them.
 
+I would say my main difficulties stemmed from making the quiz responsive
+to changes in data.json. It definitely took me a while to come up with a way 
+to deal with varying option lengths. Furthermore, since I was working with 
+multiple state arrays that kept track of user selections, I had to take into 
+consideration that setState is asynchronous and create workarounds to this factor.
+I also experienced a bit of trouble from the fact that options within
+data.json is actually an object, so I had to convert it to an array before
+I could traverse through it.
+
+
 4. How much time you can spend each week working for DP Developers?
+
+Approx. 6-7 hours
